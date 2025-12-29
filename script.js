@@ -1,81 +1,64 @@
-const pickBtn = document.getElementById('pick-btn');
-const resultContainer = document.getElementById('result-container');
-const previewBox = document.getElementById('preview-box');
-const hexDisplay = document.getElementById('hex-val');
-const rgbDisplay = document.getElementById('rgb-val');
-const hslDisplay = document.getElementById('hsl-val');
-const cmykDisplay = document.getElementById('cmyk-val');
-const errorMsg = document.getElementById('error-msg');
 
-pickBtn.addEventListener('click', async () => {
-    // 1. Check for browser support (Chromium-based like Chrome/Edge)
-    if (!window.EyeDropper) {
-        errorMsg.textContent = "Your browser doesn't support the EyeDropper API. Try Chrome or Edge.";
-        return;
-    }
+const upload = document.getElementById('imageUpload');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const hexText = document.getElementById('hexValue');
+const rgbText = document.getElementById('rgbValue');
+const preview = document.getElementById('colorPreview');
+const copyBtn = document.getElementById('copyBtn');
 
-    const eyeDropper = new EyeDropper();
-    try {
-        // 2. Open dropper and get HEX result
-        const { sRGBHex } = await eyeDropper.open();
-        updateUI(sRGBHex);
-    } catch (err) {
-        console.log("Selection canceled");
-    }
+// Load and render image to canvas
+upload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+            // Keep image within a reasonable view size while maintaining aspect ratio
+            const maxWidth = 500;
+            const scale = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scale;
+            
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
 });
 
-function updateUI(hex) {
-    const rgb = hexToRgb(hex);
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-    const cmyk = rgbToCmyk(rgb.r, rgb.g, rgb.b);
+// Extract color on mouse move or click
+const pickColor = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    previewBox.style.backgroundColor = hex;
-    hexDisplay.textContent = hex.toUpperCase();
-    rgbDisplay.textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-    hslDisplay.textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
-    cmykDisplay.textContent = `${cmyk.c}, ${cmyk.m}, ${cmyk.y}, ${cmyk.k}`;
-    
-    resultContainer.classList.remove('hidden');
-}
+    // Retrieve pixel data (R, G, B, A) at specific coordinate
+    const pixel = ctx.getImageData(x, y, 1, 1).data;
+    const [r, g, b] = pixel;
 
-// --- CONVERSION UTILS ---
+    // Convert to HEX format
+    const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+    const rgb = `rgb(${r}, ${g}, ${b})`;
 
-function hexToRgb(hex) {
-    const bigint = parseInt(hex.slice(1), 16);
-    return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
-}
+    // Update UI elements
+    preview.style.backgroundColor = hex;
+    hexText.textContent = hex.toUpperCase();
+    rgbText.textContent = rgb;
+};
 
-function rgbToHsl(r, g, b) {
-    r /= 255; g /= 255; b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-    if (max === min) { h = s = 0; } else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
-        }
-        h = Math.round(h * 60);
-    }
-    return { h, s: Math.round(s * 100), l: Math.round(l * 100) };
-}
+// Event Listeners for Interaction
+canvas.addEventListener('mousemove', pickColor);
+canvas.addEventListener('click', pickColor);
 
-function rgbToCmyk(r, g, b) {
-    let c = 1 - (r / 255);
-    let m = 1 - (g / 255);
-    let y = 1 - (b / 255);
-    let k = Math.min(c, m, y);
-    if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
-    c = Math.round(((c - k) / (1 - k)) * 100);
-    m = Math.round(((m - k) / (1 - k)) * 100);
-    y = Math.round(((y - k) / (1 - k)) * 100);
-    k = Math.round(k * 100);
-    return { c, m, y, k };
-}
-
-document.getElementById('copy-btn').addEventListener('click', () => {
-    navigator.clipboard.writeText(hexDisplay.textContent);
-    alert("HEX code copied!");
+// Modern Clipboard API for Copy Button
+copyBtn.addEventListener('click', () => {
+    const color = hexText.textContent;
+    navigator.clipboard.writeText(color).then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = originalText, 2000);
+    });
 });
