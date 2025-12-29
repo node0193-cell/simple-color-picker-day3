@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2025 Image Color Detector</title>
+    <title>Interactive Image Color Picker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <h1>Image Color Detector</h1>
-        
-        <div class="upload-section">
-            <label for="imageUpload" class="custom-upload">Choose Image</label>
-            <input type="file" id="imageUpload" accept="image/*">
-        </div>
 
-        <div class="main-content">
-            <div class="canvas-wrapper">
-                <canvas id="canvas"></canvas>
-            </div>
-            
-            <div class="results-panel">
-                <div id="colorPreview" class="preview-box"></div>
-                <div class="values">
-                    <p><strong>HEX:</strong> <span id="hexValue">#ffffff</span></p>
-                    <p><strong>RGB:</strong> <span id="rgbValue">rgb(255, 255, 255)</span></p>
-                </div>
-                <button id="copyBtn" class="copy-btn">Copy HEX</button>
-            </div>
+<div class="controls">
+    <h2>Upload & Pick Color</h2>
+    <input type="file" id="upload" accept="image/*">
+    <div id="info-panel">
+        <div id="preview" class="color-preview"></div>
+        <div class="values">
+            <strong id="hex-val">HEX: #FFFFFF</strong><br>
+            <span id="rgba-val">RGBA: rgba(255, 255, 255, 1)</span>
         </div>
     </div>
-    <script src="script.js"></script>
+    <p class="copy-hint" id="status-msg">Hover to see values, Click to copy HEX</p>
+</div>
+
+<div id="canvas-container">
+    <canvas id="imageCanvas"></canvas>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
