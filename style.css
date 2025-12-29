@@ -1,0 +1,13 @@
+:root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; }
+body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+.card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+#preview-box { width: 100%; height: 80px; border-radius: 0.5rem; margin: 1.5rem 0; border: 1px solid #e2e8f0; }
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; text-align: left; }
+.result-item label { display: block; font-size: 0.75rem; font-weight: bold; color: #64748b; margin-bottom: 0.25rem; }
+.result-item code { background: #f1f5f9; padding: 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; display: block; }
+button { width: 100%; padding: 0.75rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600; transition: 0.2s; }
+#pick-btn { background: var(--primary); color: white; }
+#pick-btn:hover { background: #1d4ed8; }
+#copy-btn { background: #f1f5f9; color: var(--text); margin-top: 1rem; }
+.hidden { display: none; }
+.error { color: #ef4444; font-size: 0.875rem; margin-top: 1rem; }
