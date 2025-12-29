@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Color Detector 2025</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="card">
+        <h1>Color Detector</h1>
+        <p class="subtitle">Pick any color from your screen</p>
+        
+        <button id="pick-btn">Activate EyeDropper</button>
+
+        <div id="result-container" class="hidden">
+            <div id="preview-box"></div>
+            
+            <div class="result-grid">
+                <div class="result-item">
+                    <label>HEX</label>
+                    <code id="hex-val">#000000</code>
+                </div>
+                <div class="result-item">
+                    <label>RGB</label>
+                    <code id="rgb-val">rgb(0, 0, 0)</code>
+                </div>
+                <div class="result-item">
+                    <label>HSL</label>
+                    <code id="hsl-val">hsl(0, 0%, 0%)</code>
+                </div>
+                <div class="result-item">
+                    <label>CMYK</label>
+                    <code id="cmyk-val">0, 0, 0, 100</code>
+                </div>
+            </div>
+            <button id="copy-btn">Copy HEX to Clipboard</button>
+        </div>
+        <p id="error-msg" class="error"></p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
